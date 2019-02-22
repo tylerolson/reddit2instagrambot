@@ -1,0 +1,4 @@
+coloredlogs
+InstagramAPI
+praw
+requests
