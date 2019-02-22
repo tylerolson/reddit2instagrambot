@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "disable_existing_loggers": true,
+  "formatters": {
+    "colored": {
+      "()": "coloredlogs.ColoredFormatter",
+      "datefmt": "%Y-%m-%d %H:%M:%S",
+      "format": "%(asctime)s %(name)s[%(process)d] [%(levelname)s] %(message)s"
+    },
+    "uncolored": {
+      "class": "logging.Formatter",
+      "datefmt": "%Y-%m-%d %H:%M:%S",
+      "format": "%(asctime)s %(name)s[%(process)d] [%(levelname)s] %(message)s"
+    }
+  },
+  "handlers": {
+    "console_handler": {
+      "level": "WARNING",
+      "class": "logging.StreamHandler",
+      "formatter": "colored"
+    },
+    "file_handler": {
+      "level": "DEBUG",
+      "class": "logging.handlers.WatchedFileHandler",
+      "formatter": "uncolored",
+      "filename": "debug.log",
+      "mode": "a",
+      "encoding": "utf-8"
+    }
+  },
+  "loggers": {
+    "root": { },
+    "main": {
+      "handlers": ["console_handler", "file_handler"],
+      "level": "DEBUG"
+    }
+  }
+}
