@@ -1,7 +1,7 @@
 import argparse
 import json
 import logging
-from reddit2instagram import reddit
+from reddit2instagram import reddit, instagram
 
 
 def main(args):
@@ -13,9 +13,9 @@ def main(args):
         handler.setLevel(handler.level - (args.verbose * 10))
 
     reddit_conn = reddit.connect_reddit()
-    found_posts = reddit.scrape_subreddit(reddit_conn, "RocketLeague")
-    reddit.download_posts(found_posts)
-
+    found_subs = reddit.scrape_subreddit(reddit_conn, "RocketLeague")
+    reddit.download_subs(found_subs)
+    instagram.upload_subs(found_subs)
 
 def process_args():
     parser = argparse.ArgumentParser(prog='reddit2instagram')

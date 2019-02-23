@@ -13,8 +13,6 @@ def connect_reddit():
     configurator.check_config()
     logger.info("Enter your Reddit password")
     reddit_password = getpass.getpass()
-    logger.info("Enter your Instagram password")
-    instagram_password = getpass.getpass()
 
     with open("config.json", "r") as config_file:
         config_json = json.load(config_file)
@@ -49,8 +47,10 @@ def scrape_subreddit(reddit_conn, subreddit):
                                        "author": submission.author.name})
                 if 'v.redd' in submission.url:
                     logger.info("Found MP4 ({0})".format(submission.title))
+                    logger.debug("Found thumbnail {0}".format(submission.preview["images"][0]["source"]["url"]))
                     found_subs.append({"id": submission.id,
                                        "url": submission.media['reddit_video']['fallback_url'],
+                                       "url_thumbnail": submission.preview["images"][0]["source"]["url"],
                                        "format": ".mp4",
                                        "title": submission.title,
                                        "author": submission.author.name})
@@ -58,28 +58,28 @@ def scrape_subreddit(reddit_conn, subreddit):
     return found_subs
 
 
-def download_posts(found_posts, filename="done.json"):
+def download_subs(found_subs, filename="done.json"):
     try:
         with open(filename, "r") as done_file:
-            completed_ids = json.load(done_file)
+            uploaded_subs = json.load(done_file)
     except FileNotFoundError:
-        completed_ids = []
+        uploaded_subs = []
 
-    for post in found_posts:
-        if post["id"] not in completed_ids:
-            logger.debug("Fetching data from {0}".format(post["url"]))
-            image_data = requests.get(post["url"], stream=True)
-            with open("media/" + post["id"] + post["format"], "wb") as handler:
+    for sub in found_subs:
+        if sub["id"] not in uploaded_subs:
+            logger.debug("Fetching data from {0}".format(sub["url"]))
+            image_data = requests.get(sub["url"], stream=True)
+            with open("media/" + sub["id"] + sub["format"], "wb") as handler:
                 shutil.copyfileobj(image_data.raw, handler)
 
-            completed_ids.append(post["id"])
-            logger.debug("Downloaded {0}{1}".format(post["id"], post["format"]))
-            # caption = post["title"] + "\n-------------------------\nCredit: u/" + post["author"] + "\n\n#rocketleague #rocketleagueclips #psyonix #reddit"
-            #if sub["format"] is not ".mp4":
-                #instaapi.uploadPhoto("media/" + sub["id"] + sub["format"], caption)
-            logger.info("Uploaded {0}{1} to Instagram!".format(post["id"], post["format"]))
-        else:
-            logger.info("Already uploaded {0}{1}".format(post["id"], post["format"]))
+            logger.debug(sub["format"])
 
-    with open(filename, "w") as done_file:
-        json.dump(completed_ids, done_file)
+            if sub["format"] in '.mp4':
+                logger.debug("Downloading video thumbnail")
+                thumbnail_data = requests.get(sub["url_thumbnail"], stream=True)
+                with open("media/thumbnail_" + sub["id"] + ".png", "wb") as handler_thumbnail:
+                    shutil.copyfileobj(thumbnail_data.raw, handler_thumbnail)
+
+            logger.debug("Downloaded {0}{1}".format(sub["id"], sub["format"]))
+        else:
+            logger.info("Already uploaded {0}{1}".format(sub["id"], sub["format"]))
