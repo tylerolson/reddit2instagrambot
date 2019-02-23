@@ -2,7 +2,6 @@ import argparse
 import json
 import logging
 from reddit2instagram import reddit
-# from InstagramAPI import InstagramAPI
 
 
 def main(args):
@@ -13,14 +12,7 @@ def main(args):
     if args.verbose:
         handler.setLevel(handler.level - (args.verbose * 10))
 
-    with open("config.json", "r") as fp:
-        config = json.load(fp)
-
-    # instaapi = InstagramAPI(config["instagram"]["username"],
-    #                         config["instagram"]["password"])
-    # instaapi.login()
-
-    reddit_conn = reddit.connect_reddit(config)
+    reddit_conn = reddit.connect_reddit()
     found_posts = reddit.scrape_subreddit(reddit_conn, "RocketLeague")
     reddit.download_posts(found_posts)
 

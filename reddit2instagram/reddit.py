@@ -4,20 +4,26 @@ import logging
 import praw
 import requests
 import shutil
+from reddit2instagram import configurator
 
 logger = logging.getLogger("main")
 
 
-def connect_reddit(config):
-    """Return a Reddit connection using credentials specified"""
-    if not config["reddit"]["password"]:
-        config["reddit"]["password"] = getpass.getpass()
+def connect_reddit():
+    configurator.check_config()
+    logger.info("Enter your Reddit password")
+    reddit_password = getpass.getpass()
+    logger.info("Enter your Instagram password")
+    instagram_password = getpass.getpass()
 
-    reddit_conn = praw.Reddit(client_id=config["reddit"]["client_id"],
-                              client_secret=config["reddit"]["client_secret"],
-                              username=config["reddit"]["username"],
-                              password=config["reddit"]["password"],
-                              user_agent=config["reddit"]["user_agent"])
+    with open("config.json", "r") as config_file:
+        config_json = json.load(config_file)
+
+    reddit_conn = praw.Reddit(client_id=config_json["reddit"]["client_id"],
+                              client_secret=config_json["reddit"]["client_secret"],
+                              username=config_json["reddit"]["username"],
+                              password=reddit_password,
+                              user_agent="reddit2instagram")
 
     return reddit_conn
 
@@ -25,23 +31,23 @@ def connect_reddit(config):
 def scrape_subreddit(reddit_conn, subreddit):
     found_subs = []
     for submission in reddit_conn.subreddit(subreddit).hot(limit=10):
-        if (not submission.stickied):
-            if (not submission.over_18):
-                if ('.png' in submission.url):
+        if not submission.stickied:
+            if not submission.over_18:
+                if '.png' in submission.url:
                     logger.info("Found PNG ({0})".format(submission.title))
                     found_subs.append({"id": submission.id,
                                        "url": submission.url,
                                        "format": ".png",
                                        "title": submission.title,
                                        "author": submission.author.name})
-                if ('.jpg' in submission.url):
+                if '.jpg' in submission.url:
                     logger.info("Found JPG ({0})".format(submission.title))
                     found_subs.append({"id": submission.id,
                                        "url": submission.url,
                                        "format": ".jpg",
                                        "title": submission.title,
                                        "author": submission.author.name})
-                if ('v.redd' in submission.url):
+                if 'v.redd' in submission.url:
                     logger.info("Found MP4 ({0})".format(submission.title))
                     found_subs.append({"id": submission.id,
                                        "url": submission.media['reddit_video']['fallback_url'],
@@ -66,7 +72,6 @@ def download_posts(found_posts, filename="done.json"):
             with open("media/" + post["id"] + post["format"], "wb") as handler:
                 shutil.copyfileobj(image_data.raw, handler)
 
-            # subsToUpload.append(post)
             completed_ids.append(post["id"])
             logger.debug("Downloaded {0}{1}".format(post["id"], post["format"]))
             # caption = post["title"] + "\n-------------------------\nCredit: u/" + post["author"] + "\n\n#rocketleague #rocketleagueclips #psyonix #reddit"
@@ -76,6 +81,5 @@ def download_posts(found_posts, filename="done.json"):
         else:
             logger.info("Already uploaded {0}{1}".format(post["id"], post["format"]))
 
-    # print(subsToUpload)
     with open(filename, "w") as done_file:
         json.dump(completed_ids, done_file)
