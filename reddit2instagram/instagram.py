@@ -29,13 +29,14 @@ def upload_subs(found_subs, filename="done.json"):
 
         if sub["id"] not in uploaded_subs:
             if sub["format"] not in ".mp4":
-                subprocess.check_call(["instapy.exe", "-u", "***REMOVED***", "-p", "***REMOVED***", "-f", "media/" + sub["id"] + sub["format"], "-t", sub_caption])
+                #subprocess.check_call(["instapy.exe", "-u", config_json["instagram"]["username"], "-p", instagram_password, "-f", "media/" + sub["id"] + "_resized" + sub["format"], "-t", sub_caption])
+                instagram_api.uploadPhoto("media/" + sub["id"] + "_resized" + sub["format"], caption=sub_caption)
                 uploaded_subs.append(sub["id"])
-                logger.info("Uploaded {0}{1} to Instagram!".format(sub["id"], sub["format"]))
+                logger.info("Uploaded photo {0}{1} to Instagram!".format(sub["id"], sub["format"]))
             else:
-                instagram_api.uploadVideo("media/" + sub["id"] + sub["format"], "media/thumbnail_" + sub["id"] + ".png", caption=sub_caption)
+                instagram_api.uploadVideo("media/" + sub["id"] + sub["format"], "media/" + sub["id"] + "_thumbnail.png", caption=sub_caption)
                 uploaded_subs.append(sub["id"])
-                logger.info("Uploaded {0}{1} to Instagram!".format(sub["id"], sub["format"]))
+                logger.info("Uploaded video {0}{1} to Instagram!".format(sub["id"], sub["format"]))
         else:
             logger.info("Already uploaded {0}{1}".format(sub["id"], sub["format"]))
 

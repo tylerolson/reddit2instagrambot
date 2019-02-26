@@ -4,7 +4,8 @@ import logging
 import praw
 import requests
 import shutil
-from reddit2instagram import configurator
+from PIL import Image
+from reddit2instagram import configurator, image_utils
 
 logger = logging.getLogger("main")
 
@@ -28,14 +29,14 @@ def connect_reddit():
 
 def scrape_subreddit(reddit_conn, subreddit):
     found_subs = []
-    for submission in reddit_conn.subreddit(subreddit).hot(limit=10):
+    for submission in reddit_conn.subreddit(subreddit).hot(limit=15):
         if not submission.stickied:
             if not submission.over_18:
                 if '.png' in submission.url:
                     logger.info("Found PNG ({0})".format(submission.title))
                     found_subs.append({"id": submission.id,
                                        "url": submission.url,
-                                       "format": ".png",
+                                       "format": ".jpeg",
                                        "title": submission.title,
                                        "author": submission.author.name})
                 if '.jpg' in submission.url:
@@ -68,18 +69,21 @@ def download_subs(found_subs, filename="done.json"):
     for sub in found_subs:
         if sub["id"] not in uploaded_subs:
             logger.debug("Fetching data from {0}".format(sub["url"]))
+
             image_data = requests.get(sub["url"], stream=True)
             with open("media/" + sub["id"] + sub["format"], "wb") as handler:
                 shutil.copyfileobj(image_data.raw, handler)
-
-            logger.debug(sub["format"])
+            logger.debug("Downloaded image {0}{1}".format(sub["id"], sub["format"]))
 
             if sub["format"] in '.mp4':
                 logger.debug("Downloading video thumbnail")
                 thumbnail_data = requests.get(sub["url_thumbnail"], stream=True)
-                with open("media/thumbnail_" + sub["id"] + ".png", "wb") as handler_thumbnail:
+                with open("media/" + sub["id"] + "_thumbnail.png", "wb") as handler_thumbnail:
                     shutil.copyfileobj(thumbnail_data.raw, handler_thumbnail)
-
-            logger.debug("Downloaded {0}{1}".format(sub["id"], sub["format"]))
+                logger.debug("Downloaded video {0}{1}".format(sub["id"], sub["format"]))
+            else:
+                image_open = Image.open("media/" + sub["id"] + sub["format"])
+                image_utils.image_to_square(image_open, "media/" + sub["id"] + "_resized" + sub["format"])
+                logger.debug("Resized image to {0}".format("media/" + sub["id"] + "_resized" + sub["format"]))
         else:
-            logger.info("Already uploaded {0}{1}".format(sub["id"], sub["format"]))
+            logger.debug("Already uploaded {0}{1}".format(sub["id"], sub["format"]))
