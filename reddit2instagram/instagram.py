@@ -22,14 +22,14 @@ def upload_subs(found_subs, filename="done.json"):
     logger.info("Enter your Instagram password")
     instagram_password = getpass.getpass()
     instagram_api = InstagramAPI(config_json["instagram"]["username"], instagram_password)
-    instagram_api.login();
+    instagram_api.login()
+    tags = config_json["instagram"]["tags"]
 
     for sub in found_subs:
-        sub_caption = sub["title"] + "\n-------------------------\nCredit: u/" + sub["author"] + "\n\n#rocketleague #rocketleagueclips #psyonix #reddit"
+        sub_caption = "{0}\n-------------------------\nCredit: u/{1}\n{2}\n\n{3}".format(sub["title"], sub["author"], sub["url"], tags)
 
         if sub["id"] not in uploaded_subs:
             if sub["format"] not in ".mp4":
-                #subprocess.check_call(["instapy.exe", "-u", config_json["instagram"]["username"], "-p", instagram_password, "-f", "media/" + sub["id"] + "_resized" + sub["format"], "-t", sub_caption])
                 instagram_api.uploadPhoto("media/" + sub["id"] + "_resized" + sub["format"], caption=sub_caption)
                 uploaded_subs.append(sub["id"])
                 logger.info("Uploaded photo {0}{1} to Instagram!".format(sub["id"], sub["format"]))

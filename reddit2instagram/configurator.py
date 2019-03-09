@@ -23,14 +23,17 @@ def create_config():
     reddit_username = input()
     logger.info("Enter your Instagram username")
     instagram_username = input()
+    logger.info("Enter Instagram tags")
+    instagram_tags = input()
 
     return {
-      "reddit": {
-          "client_id": client_id,
-          "client_secret": client_secret,
-          "username": reddit_username
-      },
-      "instagram": {
-        "username": instagram_username
-      }
+        "reddit": {
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "username": reddit_username
+        },
+        "instagram": {
+            "username": instagram_username,
+            "tags": instagram_tags
+        }
     }

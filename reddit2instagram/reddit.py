@@ -29,7 +29,7 @@ def connect_reddit():
 
 def scrape_subreddit(reddit_conn, subreddit):
     found_subs = []
-    for submission in reddit_conn.subreddit(subreddit).hot(limit=15):
+    for submission in reddit_conn.subreddit(subreddit).hot(limit=10):
         if not submission.stickied:
             if not submission.over_18:
                 if '.png' in submission.url:
