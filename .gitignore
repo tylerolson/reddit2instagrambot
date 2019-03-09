@@ -3,3 +3,5 @@ __pycache__/
 
 media/
 debug.log
+config.json
+done.json
