@@ -1,7 +1,6 @@
 import getpass
 import json
 import logging
-import subprocess
 import imageio
 from InstagramAPI import InstagramAPI
 
@@ -26,7 +25,7 @@ def upload_subs(found_subs, filename="done.json"):
     tags = config_json["instagram"]["tags"]
 
     for sub in found_subs:
-        sub_caption = "{0}\n-------------------------\nCredit: u/{1}\n{2}\n\n{3}".format(sub["title"], sub["author"], sub["url"], tags)
+        sub_caption = "{0}\n-------------------------\nCredit: u/{1}\n\n{2}".format(sub["title"], sub["author"], tags)
 
         if sub["id"] not in uploaded_subs:
             if sub["format"] not in ".mp4":

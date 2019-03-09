@@ -1,5 +1,4 @@
 import argparse
-import json
 import logging
 from reddit2instagram import reddit, instagram
 
@@ -16,6 +15,7 @@ def main(args):
     found_subs = reddit.scrape_subreddit(reddit_conn, "RocketLeague")
     reddit.download_subs(found_subs)
     instagram.upload_subs(found_subs)
+
 
 def process_args():
     parser = argparse.ArgumentParser(prog='reddit2instagram')

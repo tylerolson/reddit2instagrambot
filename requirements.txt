@@ -3,4 +3,3 @@ InstagramAPI
 praw
 requests
 imageio
-instapy-cli
