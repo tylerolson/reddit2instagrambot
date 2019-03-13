@@ -1,4 +1,3 @@
-import getpass
 import json
 import logging
 import praw
@@ -12,16 +11,14 @@ logger = logging.getLogger("main")
 
 def connect_reddit():
     configurator.check_config()
-    logger.info("Enter your Reddit password")
-    reddit_password = getpass.getpass()
-
     with open("config.json", "r") as config_file:
         config_json = json.load(config_file)
 
+    reddit_password_decrypted = configurator.decrypt_password(config_json["encrypt_key"], config_json["reddit"]["password"].encode('UTF-8'))
     reddit_conn = praw.Reddit(client_id=config_json["reddit"]["client_id"],
                               client_secret=config_json["reddit"]["client_secret"],
                               username=config_json["reddit"]["username"],
-                              password=reddit_password,
+                              password=reddit_password_decrypted.decode('UTF-8'),
                               user_agent="reddit2instagram")
 
     return reddit_conn
