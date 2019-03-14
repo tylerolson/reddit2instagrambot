@@ -18,14 +18,13 @@ def upload_subs(found_subs, filename="done.json"):
     with open("config.json", "r") as config_file:
         config_json = json.load(config_file)
 
-    logger.info("Enter your Instagram password")
     instagram_password = getpass.getpass()
     instagram_api = InstagramAPI(config_json["instagram"]["username"], instagram_password)
     instagram_api.login()
     tags = config_json["instagram"]["tags"]
 
     for sub in found_subs:
-        sub_caption = "{0}\n-------------------------\nCredit: u/{1}\n\n{2}".format(sub["title"], sub["author"], tags)
+        sub_caption = "{0}\n\nCredit: u/{1} {2}\n\n{3}".format(sub["title"], sub["author"], sub["shortlink"], tags)
 
         if sub["id"] not in uploaded_subs:
             if sub["format"] not in ".mp4":
