@@ -33,6 +33,7 @@ def scrape_subreddit(reddit_conn, subreddit):
                     logger.info("Found PNG ({0})".format(submission.title))
                     found_subs.append({"id": submission.id,
                                        "url": submission.url,
+                                       "shortlink": submission.shortlink,
                                        "format": ".jpeg",
                                        "title": submission.title,
                                        "author": submission.author.name})
@@ -40,14 +41,15 @@ def scrape_subreddit(reddit_conn, subreddit):
                     logger.info("Found JPG ({0})".format(submission.title))
                     found_subs.append({"id": submission.id,
                                        "url": submission.url,
+                                       "shortlink": submission.shortlink,
                                        "format": ".jpg",
                                        "title": submission.title,
                                        "author": submission.author.name})
                 if 'v.redd' in submission.url:
                     logger.info("Found MP4 ({0})".format(submission.title))
-                    logger.debug("Found thumbnail {0}".format(submission.preview["images"][0]["source"]["url"]))
                     found_subs.append({"id": submission.id,
                                        "url": submission.media['reddit_video']['fallback_url'],
+                                       "shortlink": submission.shortlink,
                                        "url_thumbnail": submission.preview["images"][0]["source"]["url"],
                                        "format": ".mp4",
                                        "title": submission.title,
