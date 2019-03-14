@@ -1,8 +1,8 @@
-import getpass
 import json
 import logging
 import imageio
 from InstagramAPI import InstagramAPI
+from reddit2instagram import configurator
 
 logger = logging.getLogger("main")
 imageio.plugins.ffmpeg.download()
@@ -18,8 +18,9 @@ def upload_subs(found_subs, filename="done.json"):
     with open("config.json", "r") as config_file:
         config_json = json.load(config_file)
 
-    instagram_password = getpass.getpass()
-    instagram_api = InstagramAPI(config_json["instagram"]["username"], instagram_password)
+    instagram_password_decrypted = configurator.decrypt_password(config_json["encrypt_key"], config_json["instagram"]["password"].encode('UTF-8'))
+    instagram_password_decrypted_decoded = instagram_password_decrypted.decode('UTF-8')
+    instagram_api = InstagramAPI(config_json["instagram"]["username"], instagram_password_decrypted_decoded)
     instagram_api.login()
     tags = config_json["instagram"]["tags"]
 
