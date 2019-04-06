@@ -13,6 +13,7 @@ def main(args):
     if args.verbose:
         handler.setLevel(handler.level - (args.verbose * 10))
 
+    downloadAndUpload()
     schedule.every().hour.do(downloadAndUpload)
 
 
