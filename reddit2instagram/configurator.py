@@ -1,13 +1,15 @@
 import json
 import logging
-import os.path
+import os
 import getpass
 from cryptography.fernet import Fernet
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 logger = logging.getLogger("main")
 
 
-def check_config(config_path="config.json"):
+def check_config(config_path=os.path.join(BASE_DIR, "config.json")):
+
     if os.path.exists(config_path):
         logger.debug("Config file exists")
     else:

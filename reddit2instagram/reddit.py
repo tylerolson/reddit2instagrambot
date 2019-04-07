@@ -3,15 +3,17 @@ import logging
 import praw
 import requests
 import shutil
+import os
 from PIL import Image
 from reddit2instagram import configurator, image_utils
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 logger = logging.getLogger("main")
 
 
 def connect_reddit():
     configurator.check_config()
-    with open("config.json", "r") as config_file:
+    with open(os.path.join(BASE_DIR, "config.json"), "r") as config_file:
         config_json = json.load(config_file)
 
     reddit_password_decrypted = configurator.decrypt_password(config_json["encrypt_key"], config_json["reddit"]["password"].encode('UTF-8'))
@@ -58,7 +60,7 @@ def scrape_subreddit(reddit_conn, subreddit):
     return found_subs
 
 
-def download_subs(found_subs, filename="done.json"):
+def download_subs(found_subs, filename=os.path.join(BASE_DIR, "done.json")):
     try:
         with open(filename, "r") as done_file:
             uploaded_subs = json.load(done_file)
@@ -70,19 +72,19 @@ def download_subs(found_subs, filename="done.json"):
             logger.debug("Fetching data from {0}".format(sub["url"]))
 
             image_data = requests.get(sub["url"], stream=True)
-            with open("media/" + sub["id"] + sub["format"], "wb") as handler:
+            with open(os.path.join(BASE_DIR, "media", sub["id"] + sub["format"]), "wb") as handler:
                 shutil.copyfileobj(image_data.raw, handler)
             logger.debug("Downloaded image {0}{1}".format(sub["id"], sub["format"]))
 
             if sub["format"] in '.mp4':
                 logger.debug("Downloading video thumbnail")
                 thumbnail_data = requests.get(sub["url_thumbnail"], stream=True)
-                with open("media/" + sub["id"] + "_thumbnail.png", "wb") as handler_thumbnail:
+                with open(os.path.join(BASE_DIR, "media", sub["id"] + "_thumbnail.png"), "wb") as handler_thumbnail:
                     shutil.copyfileobj(thumbnail_data.raw, handler_thumbnail)
                 logger.debug("Downloaded video {0}{1}".format(sub["id"], sub["format"]))
             else:
-                image_open = Image.open("media/" + sub["id"] + sub["format"])
-                image_utils.image_to_square(image_open, "media/" + sub["id"] + "_resized" + sub["format"])
+                image_open = Image.open(os.path.join(BASE_DIR, "media", sub["id"] + sub["format"]))
+                image_utils.image_to_square(image_open, os.path.join(BASE_DIR, "media", sub["id"] + "_resized" + sub["format"]))
                 logger.debug("Resized image to {0}".format("media/" + sub["id"] + "_resized" + sub["format"]))
         else:
             logger.debug("Already uploaded {0}{1}".format(sub["id"], sub["format"]))
