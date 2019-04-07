@@ -2,6 +2,7 @@ coloredlogs
 InstagramAPI
 praw
 requests
-imageio
+imageio==2.4.1
+moviepy
 cryptography
 schedule
