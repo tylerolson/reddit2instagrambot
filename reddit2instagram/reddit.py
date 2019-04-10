@@ -12,14 +12,11 @@ logger = logging.getLogger("main")
 
 
 def connect_reddit():
-    configurator.check_config()
-    with open(os.path.join(BASE_DIR, "config.json"), "r") as config_file:
-        config_json = json.load(config_file)
-
-    reddit_password_decrypted = configurator.decrypt_password(config_json["encrypt_key"], config_json["reddit"]["password"].encode('UTF-8'))
-    reddit_conn = praw.Reddit(client_id=config_json["reddit"]["client_id"],
-                              client_secret=config_json["reddit"]["client_secret"],
-                              username=config_json["reddit"]["username"],
+    config = configurator.get_config()
+    reddit_password_decrypted = configurator.decrypt_password(config["encrypt_key"], config["reddit"]["password"].encode('UTF-8'))
+    reddit_conn = praw.Reddit(client_id=config["reddit"]["client_id"],
+                              client_secret=config["reddit"]["client_secret"],
+                              username=config["reddit"]["username"],
                               password=reddit_password_decrypted.decode('UTF-8'),
                               user_agent="reddit2instagram")
 

@@ -2,7 +2,7 @@ import argparse
 import logging
 import schedule
 import time
-from reddit2instagram import reddit, instagram
+from reddit2instagram import reddit, instagram, configurator
 
 
 def main(args):
@@ -13,6 +13,7 @@ def main(args):
     if args.verbose:
         handler.setLevel(handler.level - (args.verbose * 10))
 
+    logger.debug(configurator.get_config())
     downloadAndUpload()
     schedule.every().hour.do(downloadAndUpload)
 

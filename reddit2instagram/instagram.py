@@ -17,17 +17,14 @@ def upload_subs(found_subs, filename=os.path.join(BASE_DIR, "done.json")):
     except FileNotFoundError:
         uploaded_subs = []
 
-    with open(os.path.join(BASE_DIR, "config.json"), "r") as config_file:
-        config_json = json.load(config_file)
-
-    instagram_password_decrypted = configurator.decrypt_password(config_json["encrypt_key"], config_json["instagram"]["password"].encode('UTF-8'))
+    config = configurator.get_config()
+    instagram_password_decrypted = configurator.decrypt_password(config["encrypt_key"], config["instagram"]["password"].encode('UTF-8'))
     instagram_password_decrypted_decoded = instagram_password_decrypted.decode('UTF-8')
-    instagram_api = InstagramAPI(config_json["instagram"]["username"], instagram_password_decrypted_decoded)
+    instagram_api = InstagramAPI(config["instagram"]["username"], instagram_password_decrypted_decoded)
     instagram_api.login()
-    tags = config_json["instagram"]["tags"]
 
     for sub in found_subs:
-        sub_caption = "{0}\n\nCredit: u/{1} {2}\n\n{3}".format(sub["title"], sub["author"], sub["shortlink"], tags)
+        sub_caption = "{0}\n\nCredit: u/{1} {2}\n\n{3}".format(sub["title"], sub["author"], sub["shortlink"], config["instagram"]["tags"])
 
         if sub["id"] not in uploaded_subs:
             if sub["format"] not in ".mp4":

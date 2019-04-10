@@ -9,13 +9,20 @@ logger = logging.getLogger("main")
 
 
 def check_config(config_path=os.path.join(BASE_DIR, "config.json")):
-
     if os.path.exists(config_path):
         logger.debug("Config file exists")
     else:
         logger.info("A config does not exist, please make one")
         with open(config_path, "w") as config_file:
             json.dump(create_config(), config_file, indent=4)
+
+
+def get_config(config_path=os.path.join(BASE_DIR, "config.json")):
+    check_config()
+    with open(config_path, "r") as config_json:
+        config = json.load(config_json)
+
+    return config
 
 
 def encrypt_password(key, password):
