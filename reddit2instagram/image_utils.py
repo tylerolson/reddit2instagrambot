@@ -1,7 +1,5 @@
-import logging
 from PIL import Image
-
-logger = logging.getLogger("main")
+from common import *
 
 
 def image_to_square(image, location, bg_color=(255, 255, 255, 255)):

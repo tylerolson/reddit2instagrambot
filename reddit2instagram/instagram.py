@@ -1,12 +1,10 @@
 import json
-import logging
 import imageio
 import os
 from InstagramAPI import InstagramAPI
 from reddit2instagram import configurator
+from common import *
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-logger = logging.getLogger("main")
 imageio.plugins.ffmpeg.download()
 
 

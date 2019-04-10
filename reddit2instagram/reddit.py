@@ -1,14 +1,11 @@
 import json
-import logging
 import praw
 import requests
 import shutil
 import os
 from PIL import Image
+from common import *
 from reddit2instagram import configurator, image_utils
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-logger = logging.getLogger("main")
 
 
 def connect_reddit():
