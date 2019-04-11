@@ -61,6 +61,10 @@ def download_subs(found_subs, filename=os.path.join(BASE_DIR, "done.json")):
     except FileNotFoundError:
         uploaded_subs = []
 
+    if not os.path.exists(os.path.join(BASE_DIR, "media")):
+        logger.debug("Media folder does not exist, creating one...")
+        os.makedirs(os.path.join(BASE_DIR, "media"))
+
     for sub in found_subs:
         if sub["id"] not in uploaded_subs:
             logger.debug("Fetching data from {0}".format(sub["url"]))
