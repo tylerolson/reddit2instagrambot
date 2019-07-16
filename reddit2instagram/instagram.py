@@ -12,7 +12,7 @@ def upload_subs(found_subs, filename=os.path.join(BASE_DIR, "done.json")):
     try:
         with open(filename, "r") as done_file:
             uploaded_subs = json.load(done_file)
-    except FileNotFoundError:
+    except (json.decoder.JSONDecodeError, FileNotFoundError):
         uploaded_subs = []
 
     config = configurator.get_config()
