@@ -35,37 +35,20 @@ def decrypt_password(key, password_encrypted):
 
 
 def create_config():
-    encrypt_key = Fernet.generate_key()
+    configuration = { "encrypt_key": Fernet.generate_key().decode("UTF-8"),
+                      "reddit": {},
+                      "instagram": {}
+                    }
 
-    logger.info("Enter your Reddit client ID")
-    client_id = input()
-    logger.info("Enter your Reddit client secret")
-    client_secret = input()
-    logger.info("Enter your Reddit username")
-    reddit_username = input()
-    logger.info("Enter your Reddit password")
-    reddit_password = getpass.getpass()
-    logger.info("Enter your Instagram username")
-    instagram_username = input()
-    logger.info("Enter your Instagram password")
-    instagram_password = getpass.getpass()
-    logger.info("Enter Instagram tags")
-    instagram_tags = input()
+    configuration["reddit"]["client_id"] = input("Enter your Reddit client ID: ")
+    configuration["reddit"]["client_secret"] = input("Enter your Reddit client secret: ")
+    configuration["reddit"]["username"] = input("Enter your Reddit username: ")
+    password = getpass.getpass("Enter your Reddit password: ")
+    configuration["reddit"]["password"] = encrypt_password(configuration["encrypt_key"], password.encode("UTF-8")).decode("UTF-8")
 
-    reddit_password_encrypted = encrypt_password(encrypt_key, reddit_password.encode('UTF-8'))
-    instagram_password_encrypted = encrypt_password(encrypt_key, instagram_password.encode('UTF-8'))
+    configuration["instagram"]["username"] = input("Enter your Instagram username: ")
+    password = getpass.getpass("Enter your Instagram password: ")
+    configuration["instagram"]["password"] = encrypt_password(configuration["encrypt_key"], password.encode("UTF-8")).decode("UTF-8")
+    configuration["instagram"]["tags"] = input("Enter Instagram tags: ")
 
-    return {
-        "encrypt_key": encrypt_key.decode('UTF-8'),
-        "reddit": {
-            "client_id": client_id,
-            "client_secret": client_secret,
-            "username": reddit_username,
-            "password": reddit_password_encrypted.decode('UTF-8')
-        },
-        "instagram": {
-            "username": instagram_username,
-            "password": instagram_password_encrypted.decode('UTF-8'),
-            "tags": instagram_tags
-        }
-    }
+    return configuration
